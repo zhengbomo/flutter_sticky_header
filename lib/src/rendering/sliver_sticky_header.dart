@@ -17,6 +17,7 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     RenderSliver child,
     bool overlapsContent: false,
     bool sticky: true,
+    this.object,
     StickyHeaderController controller,
   })  : assert(overlapsContent != null),
         assert(sticky != null),
@@ -26,6 +27,9 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     this.header = header;
     this.child = child;
   }
+
+  // attach object for SliverStickyHeader
+  final dynamic object;
 
   SliverStickyHeaderState _oldState;
   double _headerExtent;
@@ -55,7 +59,8 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
     if (_controller == value) return;
     if (_controller != null && value != null) {
       // We copy the state of the old controller.
-      value.stickyHeaderScrollOffset = _controller.stickyHeaderScrollOffset;
+      value.setStickyHeaderScrollOffset(
+          _controller.stickyHeaderScrollOffset, object);
     }
     _controller = value;
   }
@@ -235,7 +240,8 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
 
       final double headerScrollRatio = ((headerPosition - constraints.overlap).abs() / _headerExtent);
       if (_isPinned && headerScrollRatio <= 1) {
-        controller?.stickyHeaderScrollOffset = constraints.precedingScrollExtent;
+        controller?.setStickyHeaderScrollOffset(
+            constraints.precedingScrollExtent, object);
       }
       // second layout if scroll percentage changed and header is a RenderStickyHeaderLayoutBuilder.
       if (header is RenderStickyHeaderLayoutBuilder) {

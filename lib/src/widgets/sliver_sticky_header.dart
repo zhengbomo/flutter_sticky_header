@@ -18,8 +18,22 @@ class StickyHeaderController with ChangeNotifier {
   double get stickyHeaderScrollOffset => _stickyHeaderScrollOffset;
   double _stickyHeaderScrollOffset = 0;
 
+  /// object attached of current the sticky header.
+  dynamic get object => _object;
+  dynamic _object = null;
+
+  /// object attached of current the sticky header changed.
+  ValueChanged<dynamic> objectChanged;
+
   /// This setter should only be used by flutter_sticky_header package.
-  set stickyHeaderScrollOffset(double value) {
+  setStickyHeaderScrollOffset(double value, dynamic object) {
+    if (this._object != object) {
+      this._object = object;
+      // notify
+      if (this.objectChanged != null) {
+        this.objectChanged(object);
+      }
+    }
     assert(value != null);
     if (_stickyHeaderScrollOffset != value) {
       _stickyHeaderScrollOffset = value;
@@ -39,8 +53,11 @@ class StickyHeaderController with ChangeNotifier {
 class DefaultStickyHeaderController extends StatefulWidget {
   const DefaultStickyHeaderController({
     Key key,
+    this.controller,
     @required this.child,
   }) : super(key: key);
+
+  final StickyHeaderController controller;
 
   /// The widget below this widget in the tree.
   ///
@@ -55,10 +72,22 @@ class DefaultStickyHeaderController extends StatefulWidget {
   ///
   /// ```dart
   /// StickyHeaderController controller = DefaultStickyHeaderController.of(context);
+  /// 
+  /// without dependent
+  /// StickyHeaderController controller = DefaultStickyHeaderController.of(context, listen: false);
   /// ```
-  static StickyHeaderController of(BuildContext context) {
-    final _StickyHeaderControllerScope scope = context.dependOnInheritedWidgetOfExactType<_StickyHeaderControllerScope>();
-    return scope?.controller;
+  static StickyHeaderController of(BuildContext context, {bool listen = true}) {
+    if (listen) {
+      final _StickyHeaderControllerScope scope = context
+          .dependOnInheritedWidgetOfExactType<_StickyHeaderControllerScope>();
+      return scope?.controller;
+    } else {
+      final _StickyHeaderControllerScope scope = context
+          .getElementForInheritedWidgetOfExactType<
+              _StickyHeaderControllerScope>()
+          .widget;
+      return scope?.controller;
+    }
   }
 
   @override
@@ -71,12 +100,14 @@ class _DefaultStickyHeaderControllerState extends State<DefaultStickyHeaderContr
   @override
   void initState() {
     super.initState();
-    _controller = StickyHeaderController();
+    _controller = widget.controller ?? StickyHeaderController();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
@@ -147,6 +178,7 @@ class SliverStickyHeader extends RenderObjectWidget {
   SliverStickyHeader({
     Key key,
     this.header,
+    this.object,
     this.sliver,
     this.overlapsContent: false,
     this.sticky = true,
@@ -157,6 +189,9 @@ class SliverStickyHeader extends RenderObjectWidget {
 
   /// The header to display before the sliver.
   final Widget header;
+
+  /// attach object
+  final dynamic object;
 
   /// The sliver to display after the header.
   final Widget sliver;
@@ -178,6 +213,7 @@ class SliverStickyHeader extends RenderObjectWidget {
   @override
   RenderSliverStickyHeader createRenderObject(BuildContext context) {
     return RenderSliverStickyHeader(
+      object: object,
       overlapsContent: overlapsContent,
       sticky: sticky,
       controller: controller ?? DefaultStickyHeaderController.of(context),
