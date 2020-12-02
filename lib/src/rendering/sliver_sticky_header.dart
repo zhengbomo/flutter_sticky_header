@@ -249,7 +249,7 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
       final double childScrollExtent = child?.geometry?.scrollExtent ?? 0.0;
       final double headerPosition = sticky
           ? math.min(
-              constraints.overlap,
+              0,
               childScrollExtent -
                   constraints.scrollOffset -
                   (overlapsContent ? _headerExtent : 0.0))

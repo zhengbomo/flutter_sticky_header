@@ -1,3 +1,8 @@
+# custom changed
+
+* attach object to header 
+* make top header follow scrolling
+
 # flutter_sticky_header
 
 A Flutter implementation of sticky headers with a sliver as a child.
