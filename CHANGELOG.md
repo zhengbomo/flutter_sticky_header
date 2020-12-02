@@ -1,3 +1,27 @@
+## 0.5.0
+### Changed
+* The minimum version of Flutter.
+
+## 0.4.6
+### Added
+* A new SliverStickyHeader.builder constructor instead of the deprecated SliverStickyHeaderBuilder.
+* A dependency to value_layout_builder in order to manage the SliverStickyHeader.builder.
+
+### Removed
+* Custom code to make SliverStickyHeader.builder work.
+
+## 0.4.5
+### Fixed
+* Null references issues in debug mode.
+
+## 0.4.4
+### Fixed
+* Static analysis issues.
+
+## 0.4.3
+### Fixed
+* Static analysis issues.
+
 ## 0.4.2
 ### Added
 * A StickyHeaderController to get the scroll offset of the current sticky header.
